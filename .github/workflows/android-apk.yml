@@ -43,6 +43,7 @@ jobs:
           from pathlib import Path
           import xml.etree.ElementTree as ET
           android_ns = "http://schemas.android.com/apk/res/android"
+          ET.register_namespace("android", android_ns)
           strings_path = Path("android/app/src/main/res/values/strings.xml")
           tree = ET.parse(strings_path)
           root = tree.getroot()
