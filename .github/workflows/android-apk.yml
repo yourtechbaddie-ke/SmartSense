@@ -72,8 +72,20 @@ jobs:
       - name: Verify APK signature
         run: $ANDROID_HOME/build-tools/$(ls "$ANDROID_HOME/build-tools" | sort -V | tail -1)/apksigner verify --verbose android/app/build/outputs/apk/debug/app-debug.apk
 
+      # Publish the signed APK before the optional emulator smoke test, so a
+      # slow or unavailable emulator cannot block the user's download.
+      - name: Upload installable APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: SmartSense-debug-apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
+          retention-days: 30
+
       - name: Install and launch on Android emulator
         uses: reactivecircus/android-emulator-runner@v2
+        continue-on-error: true
+        timeout-minutes: 8
         with:
           api-level: 33
           target: google_apis
@@ -84,11 +96,3 @@ jobs:
             adb shell monkey -p com.smartsense.inventory 1
             sleep 5
             adb shell pidof com.smartsense.inventory
-
-      - name: Upload installable APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: SmartSense-debug-apk
-          path: android/app/build/outputs/apk/debug/app-debug.apk
-          if-no-files-found: error
-          retention-days: 30
