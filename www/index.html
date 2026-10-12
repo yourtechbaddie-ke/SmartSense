@@ -7,6 +7,24 @@
 <link rel="stylesheet" href="/theme.css">
 </head>
 <body>
+
+<section class="login-screen" id="loginScreen" aria-labelledby="loginTitle">
+  <div class="login-orb login-orb-one"></div><div class="login-orb login-orb-two"></div>
+  <div class="login-card">
+    <a class="login-brand" href="#" aria-label="SmartSense"><span class="login-brand-mark">S<span>✦</span></span><span><strong>SmartSense</strong><small>INVENTORY INTELLIGENCE</small></span></a>
+    <div class="login-eyebrow">YOUR BUSINESS, IN CLEARER FOCUS</div>
+    <h1 id="loginTitle">Welcome <span>back.</span></h1>
+    <p class="login-intro">Sign in to open your inventory workspace and make your next business decision with confidence.</p>
+    <form id="loginForm" class="login-form">
+      <label for="loginEmail">Email address</label><input id="loginEmail" name="email" type="email" autocomplete="username" placeholder="you@yourbusiness.com" required>
+      <label for="loginPassword">Password</label><input id="loginPassword" name="password" type="password" autocomplete="current-password" placeholder="Enter any password for this demo" required>
+      <button type="submit" class="login-submit">Continue to SmartSense <span>→</span></button>
+    </form>
+    <div class="login-demo-note"><span>✦</span><p><strong>Demo sign-in</strong><br>This version keeps data on this device. Sign-in is a local demo gate only; it does not verify an account or secure records. A production login requires a secure authentication service.</p></div>
+    <div class="login-footer">MERLOT · POWDER BLUE · ALABASTER</div>
+  </div>
+</section>
+
 <div class="app-shell">
   <aside class="sidebar" id="sidebar">
     <a class="brand" href="#" aria-label="SmartSense home"><span class="brand-mark">S<span>✦</span></span><span class="brand-copy"><strong>SmartSense</strong><small>INVENTORY INTELLIGENCE</small></span></a>
@@ -27,7 +45,7 @@
   <main class="main-area">
     <header class="topbar">
       <button class="mobile-menu" id="mobileMenu" aria-label="Open navigation">☰</button>
-      <div class="breadcrumb"><span>Workspace</span><b>/</b><strong id="crumbTitle">Overview</strong></div>
+      <div class="breadcrumb"><span>Workspace</span><b>/</b><strong id="crumbTitle">Home</strong></div>
       <div class="top-actions"><span class="demo-pill"><i></i> DEMO DATA</span><button class="icon-btn" id="exportBtn" title="Export inventory as CSV" aria-label="Export inventory">⇩</button><button class="primary-btn" id="topAddBtn">＋ Add product</button></div>
     </header>
     <div class="content-wrap">
