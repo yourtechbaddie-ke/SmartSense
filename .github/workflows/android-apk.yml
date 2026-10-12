@@ -12,7 +12,7 @@ jobs:
   build-apk:
     name: Test and build installable APK
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 35
     steps:
       - name: Check out source
         uses: actions/checkout@v4
@@ -45,6 +45,22 @@ jobs:
         run: |
           chmod +x gradlew
           ./gradlew --no-daemon assembleDebug
+
+      - name: Verify APK signature
+        run: $ANDROID_HOME/build-tools/$(ls "$ANDROID_HOME/build-tools" | sort -V | tail -1)/apksigner verify --verbose android/app/build/outputs/apk/debug/app-debug.apk
+
+      - name: Install and launch on Android emulator
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 33
+          target: google_apis
+          arch: x86_64
+          profile: pixel_2
+          script: |
+            adb install android/app/build/outputs/apk/debug/app-debug.apk
+            adb shell monkey -p com.smartsense.inventory 1
+            sleep 5
+            adb shell pidof com.smartsense.inventory
 
       - name: Upload installable APK
         uses: actions/upload-artifact@v4
