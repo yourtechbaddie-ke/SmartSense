@@ -37,6 +37,28 @@ jobs:
       - name: Generate Android project
         run: npx cap add android
 
+      - name: Set professional app display name
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import xml.etree.ElementTree as ET
+          android_ns = "http://schemas.android.com/apk/res/android"
+          strings_path = Path("android/app/src/main/res/values/strings.xml")
+          tree = ET.parse(strings_path)
+          root = tree.getroot()
+          app_name = root.find("./string[@name='app_name']")
+          if app_name is None:
+              app_name = ET.SubElement(root, "string", {"name": "app_name"})
+          app_name.text = "SmartSense"
+          tree.write(strings_path, encoding="utf-8", xml_declaration=True)
+          manifest_path = Path("android/app/src/main/AndroidManifest.xml")
+          manifest_tree = ET.parse(manifest_path)
+          manifest_root = manifest_tree.getroot()
+          manifest_root.set("{" + android_ns + "}label", "SmartSense")
+          manifest_tree.write(manifest_path, encoding="utf-8", xml_declaration=True)
+          print("Android launcher label set to SmartSense")
+          PY
+
       - name: Sync app into Android project
         run: npx cap sync android
 
