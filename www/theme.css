@@ -218,6 +218,7 @@ input:focus,select:focus,.search-box:focus-within{border-color:#789DBD!important
 @media(max-width:600px){.settings-layout{grid-template-columns:1fr;gap:11px}.settings-main{padding:16px}.settings-form{grid-template-columns:1fr}.settings-form-actions{align-items:flex-start;flex-direction:column}.legal-link-grid{grid-template-columns:1fr}.app-footer{align-items:flex-start;flex-direction:column;padding:17px 14px 24px}.app-footer div{gap:10px}.legal-document{padding:20px}.settings-action-row{align-items:flex-start;flex-direction:column}.danger-btn{align-self:flex-start}}
 
 /* Login screen and app gate */
+.login-screen[hidden]{display:none!important}
 body:not(.authenticated) .app-shell,body:not(.authenticated) .app-footer{display:none!important}
 .login-screen{min-height:100svh;display:grid;place-items:center;position:relative;overflow:hidden;padding:24px;background:radial-gradient(circle at 8% 12%,#AFCBE355,transparent 32%),radial-gradient(circle at 92% 88%,#71394D20,transparent 30%),#F7F4EF}
 .login-orb{position:absolute;border-radius:50%;pointer-events:none;filter:blur(1px)}
