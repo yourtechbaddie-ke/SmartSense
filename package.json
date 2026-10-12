@@ -1,0 +1,16 @@
+{
+  "name": "smartsense",
+  "version": "1.0.0",
+  "private": true,
+  "description": "SmartSense inventory intelligence app for small commerce businesses",
+  "scripts": {
+    "test": "node --check www/app.js && node scripts/smoke-test.cjs"
+  },
+  "dependencies": {
+    "@capacitor/android": "^7.4.3",
+    "@capacitor/core": "^7.4.3"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^7.4.3"
+  }
+}
