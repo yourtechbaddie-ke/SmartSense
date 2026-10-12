@@ -106,7 +106,33 @@ function updateSalePreview(){const p=state.products.find(function(x){return x.id
 function recordSale(e){e.preventDefault();const p=state.products.find(function(x){return x.id===$('saleProduct').value}),qty=Math.floor(num($('saleQty').value));if(!p||qty<1){showToast('Enter a valid sale quantity.');return;}if(qty>p.stock){showToast('Not enough stock. Only '+p.stock+' units available.');return;}if(prefs.confirmSales&&!window.confirm('Record '+qty+' × '+p.name+' for '+money(p.price*qty)+'? Stock will be reduced immediately.'))return;const sale={id:'sale-'+Date.now(),productId:p.id,productName:p.name,qty:qty,total:p.price*qty,cost:p.cost*qty,date:today()};p.stock-=qty;p.sold=(p.sold||0)+qty;state.sales.unshift(sale);closeSale();renderAll();showToast('Sale recorded. Stock and sales totals updated.');}
 function restock(id){const p=state.products.find(function(x){return x.id===id});if(!p)return;const raw=window.prompt('How many units of '+p.name+' are you adding?',String(Math.max(1,p.min*2-p.stock)));if(raw===null)return;const qty=Number(raw);if(!Number.isInteger(qty)||qty<1){showToast('Enter a whole number greater than zero.');return;}p.stock+=qty;renderAll();showToast(qty+' units added to '+p.name+'.');}
 function exportCSV(){const rows=[['Product','SKU','Quantity on hand','Unit cost KSh','Selling price KSh','Unit gross profit KSh','Margin percent','Minimum stock','Status']].concat(state.products.map(function(p){return [p.name,p.sku,p.stock,p.cost,p.price,profit(p),Math.round(margin(p)),p.min,isLow(p)?'Low stock':'Healthy']}));const csv=rows.map(function(row){return row.map(function(v){return '"'+String(v).replace(/"/g,'""')+'"'}).join(',')}).join('\r\n');const blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8;'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='smartsense-inventory.csv';document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);showToast('Inventory CSV exported.');}
-function setView(name){document.querySelectorAll('.view').forEach(function(v){v.classList.toggle('active',v.id==='view-'+name)});document.querySelectorAll('.nav-item').forEach(function(b){b.classList.toggle('active',b.dataset.view===name)});const names={overview:'Overview',inventory:'Inventory',sales:'Sales & movement',insights:'Smart insights',settings:'Settings',about:'About SmartSense',help:'Help & getting started',privacy:'Privacy Policy',terms:'Terms & Conditions'};$('crumbTitle').textContent=names[name]||'Overview';$('sidebar').classList.remove('open');window.scrollTo({top:0,behavior:'smooth'});}
+let viewHistory=[];
+let currentView='overview';
+function setView(name,fromBack){
+ if(!document.getElementById('view-'+name))name='overview';
+ if(name!==currentView&&!fromBack)viewHistory.push(currentView);
+ document.querySelectorAll('.view').forEach(function(v){v.classList.toggle('active',v.id==='view-'+name)});
+ document.querySelectorAll('.nav-item').forEach(function(b){b.classList.toggle('active',b.dataset.view===name)});
+ const names={overview:'Home',inventory:'Inventory',sales:'Sales & movement',insights:'Smart insights',settings:'Settings',about:'About SmartSense',help:'Help & getting started',privacy:'Privacy Policy',terms:'Terms & Conditions'};
+ $('crumbTitle').textContent=names[name]||'Home';
+ currentView=name;
+ $('sidebar').classList.remove('open');
+ window.scrollTo({top:0,behavior:'smooth'});
+}
+function goBack(){
+ if(viewHistory.length){const previous=viewHistory.pop();setView(previous,true);return;}
+ if(currentView!=='overview'){setView('overview',true);return;}
+ document.body.classList.remove('authenticated');
+ $('loginScreen').hidden=false;
+ try{localStorage.removeItem('smartsense-demo-session-v1');}catch(e){}
+}
+document.querySelectorAll('.view').forEach(function(view){
+ const bar=document.createElement('div');bar.className='view-backbar';
+ const button=document.createElement('button');button.type='button';button.className='view-back-button';button.innerHTML='← <span>Back</span>';
+ button.setAttribute('aria-label','Go back to previous page');button.addEventListener('click',goBack);
+ const hint=document.createElement('span');hint.className='view-back-hint';hint.textContent=view.id==='view-overview'?'Home workspace':'Return to the previous screen';
+ bar.appendChild(button);bar.appendChild(hint);view.insertBefore(bar,view.firstChild);
+});
 document.querySelectorAll('[data-view]').forEach(function(b){b.addEventListener('click',function(){setView(b.dataset.view)})});
 document.querySelectorAll('[data-goto]').forEach(function(b){b.addEventListener('click',function(){setView(b.dataset.goto)})});
 $('topAddBtn').addEventListener('click',openProduct);$('inventoryAddBtn').addEventListener('click',openProduct);$('productForm').addEventListener('submit',addProduct);$('modalClose').addEventListener('click',closeProduct);$('modalCancel').addEventListener('click',closeProduct);
@@ -129,5 +155,27 @@ $('settingsExport').addEventListener('click',exportCSV);
 $('resetDemo').addEventListener('click',function(){if(!window.confirm('Reset this browser workspace to the original SmartSense sample data? This replaces current local records. Export your catalogue first if you need it.'))return;state=freshState();prefs={alerts:true,confirmSales:true,showDemo:true,businessName:'Sample Business',businessCategory:'Retail & general trade',businessOwner:''};savePrefs();save();applyPrefs();renderAll();showToast('Demo workspace reset.');});
 document.querySelectorAll('[data-view]').forEach(function(b){if(!b.dataset.boundView){b.dataset.boundView='1';b.addEventListener('click',function(){setView(b.dataset.view);});}});
 const dateLabel=new Date().toLocaleDateString('en-KE',{weekday:'long',month:'long',day:'numeric'}).toUpperCase();document.querySelector('.eyebrow').textContent=dateLabel+' · YOUR BUSINESS AT A GLANCE';
+
+const loginForm=$('loginForm');
+function enterWorkspace(email){
+ document.body.classList.add('authenticated');
+ $('loginScreen').hidden=true;
+ try{localStorage.setItem('smartsense-demo-session-v1',JSON.stringify({email:email,enteredAt:new Date().toISOString()}));}catch(e){}
+ setView('overview',true);
+ viewHistory=[];
+}
+loginForm.addEventListener('submit',function(e){
+ e.preventDefault();
+ const email=$('loginEmail').value.trim();
+ const password=$('loginPassword').value;
+ if(!email||!password){showToast('Enter your email and password to continue.');return;}
+ enterWorkspace(email);
+ showToast('Welcome to your SmartSense workspace.');
+});
+try{
+ const session=JSON.parse(localStorage.getItem('smartsense-demo-session-v1')||'null');
+ if(session&&session.email){$('loginEmail').value=session.email;document.body.classList.add('authenticated');$('loginScreen').hidden=true;}
+}catch(e){}
+
 applyPrefs();
 renderAll();
