@@ -219,7 +219,7 @@ input:focus,select:focus,.search-box:focus-within{border-color:#789DBD!important
 
 /* Login screen and app gate */
 .login-screen[hidden]{display:none!important}
-body:not(.authenticated) .app-shell,body:not(.authenticated) .app-footer{display:none!important}
+
 .login-screen{min-height:100svh;display:grid;place-items:center;position:relative;overflow:hidden;padding:24px;background:radial-gradient(circle at 8% 12%,#AFCBE355,transparent 32%),radial-gradient(circle at 92% 88%,#71394D20,transparent 30%),#F7F4EF}
 .login-orb{position:absolute;border-radius:50%;pointer-events:none;filter:blur(1px)}
 .login-orb-one{width:260px;height:260px;top:-105px;right:-70px;background:#AFCBE344}
