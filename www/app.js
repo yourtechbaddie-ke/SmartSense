@@ -156,26 +156,5 @@ $('resetDemo').addEventListener('click',function(){if(!window.confirm('Reset thi
 document.querySelectorAll('[data-view]').forEach(function(b){if(!b.dataset.boundView){b.dataset.boundView='1';b.addEventListener('click',function(){setView(b.dataset.view);});}});
 const dateLabel=new Date().toLocaleDateString('en-KE',{weekday:'long',month:'long',day:'numeric'}).toUpperCase();document.querySelector('.eyebrow').textContent=dateLabel+' · YOUR BUSINESS AT A GLANCE';
 
-const loginForm=$('loginForm');
-function enterWorkspace(email){
- document.body.classList.add('authenticated');
- $('loginScreen').hidden=true;
- try{localStorage.setItem('smartsense-demo-session-v1',JSON.stringify({email:email,enteredAt:new Date().toISOString()}));}catch(e){}
- setView('overview',true);
- viewHistory=[];
-}
-loginForm.addEventListener('submit',function(e){
- e.preventDefault();
- const email=$('loginEmail').value.trim();
- const password=$('loginPassword').value;
- if(!email||!password){showToast('Enter your email and password to continue.');return;}
- enterWorkspace(email);
- showToast('Welcome to your SmartSense workspace.');
-});
-try{
- const session=JSON.parse(localStorage.getItem('smartsense-demo-session-v1')||'null');
- if(session&&session.email){$('loginEmail').value=session.email;document.body.classList.add('authenticated');$('loginScreen').hidden=true;}
-}catch(e){}
-
 applyPrefs();
 renderAll();
